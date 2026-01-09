@@ -1,0 +1,71 @@
+<h1>Weather Search</h1>
+
+<div data-controller="weather-search">
+  <form action="/weather" method="get" data-weather-search-target="form">
+    <fieldset>
+      <legend>Search by</legend>
+      <label>
+        <input type="radio" name="mode" value="zip" checked data-action="weather-search#modeChange">
+        ZIP code
+      </label>
+      <label>
+        <input type="radio" name="mode" value="city_state" data-action="weather-search#modeChange">
+        City / State (US only)
+      </label>
+    </fieldset>
+
+    <div data-weather-search-target="zipFields">
+      <label for="zip">ZIP code</label>
+      <input id="zip" name="zip" type="text" pattern="\d{5}" maxlength="5" inputmode="numeric" value="<%= h params[:zip] %>">
+    </div>
+
+    <div data-weather-search-target="cityStateFields" style="display:none; margin-top: 8px;">
+      <label for="city">City</label>
+      <input id="city" name="city" type="text" value="<%= h params[:city] %>">
+
+      <label for="state">State (2-letter code)</label>
+      <input id="state" name="state" type="text" maxlength="2" style="text-transform:uppercase" value="<%= h params[:state] %>">
+    </div>
+
+    <div style="margin-top: 12px;">
+      <button type="submit">Search</button>
+    </div>
+  </form>
+
+  <% if @error.present? %>
+    <p style="color: red;"><%= @error %></p>
+  <% end %>
+
+  <% if @api_error.present? %>
+    <div style="margin-top: 16px; padding: 8px; border: 1px solid #f5c2c7; background: #fff0f0; color: #7a1f1f;">
+      <strong>API error:</strong>
+      <p><%= h @api_error %></p>
+    </div>
+  <% end %>
+
+  <% if @weather_result.present? %>
+    <%# OpenWeatherMap response: name, sys.country, main.temp, weather[0].description, main.humidity, wind.speed %>
+    <div style="margin-top: 16px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">
+      <h2>Weather for <%= h(@weather_result[:name].to_s) %><% if @weather_result[:sys] && @weather_result[:sys][:country] %>, <%= h(@weather_result[:sys][:country]) %><% end %>
+        <% if @cached && @cached_at.present? %>
+          <span style="font-weight: normal; font-size: 0.8em; color: #666; margin-left: 8px;">(Cached · <%= time_ago_in_words(@cached_at) %> ago)</span>
+        <% end %>
+      </h2>
+      <p><strong>Temperature:</strong> <%= h(@weather_result.dig(:main, :temp).to_s) %> °F</p>
+      <p><strong>Conditions:</strong> <%= h(@weather_result.dig(:weather, 0, :description).to_s.capitalize) %></p>
+      <p><strong>Humidity:</strong> <%= h(@weather_result.dig(:main, :humidity).to_s) %>%</p>
+      <p><strong>Wind:</strong> <%= h(@weather_result.dig(:wind, :speed).to_s) %> mph</p>
+      <p class="muted">(Data provided by OpenWeatherMap)</p>
+    </div>
+  <% elsif @search_info.present? %>
+    <div style="margin-top: 16px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">
+      <h2>Search submitted</h2>
+      <% if @search_info[:type] == :zip %>
+        <p>Searching weather for ZIP: <strong><%= @search_info[:value] %></strong></p>
+      <% else %>
+        <p>Searching weather for City: <strong><%= h @search_info[:city] %></strong>, State: <strong><%= h @search_info[:state] %></strong></p>
+      <% end %>
+      <p class="muted">(No external API configured yet.)</p>
+    </div>
+  <% end %>
+</div>
