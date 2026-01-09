@@ -1,29 +1,43 @@
 <%# Partial: Renders weather result or submitted search info. Expects locals: weather_result, search_info, cached, cached_at %>
 
 <% if weather_result.present? %>
-  <div id="weather-result" style="margin-top: 16px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">
-    <h2>Weather for <%= h(weather_result&.dig(:name).to_s) %><% if weather_result&.dig(:sys, :country) %>, <%= h(weather_result&.dig(:sys, :country)) %><% end %>
-      <% if cached && cached_at.present? %>
-        <span style="font-weight: normal; font-size: 0.8em; color: #666; margin-left: 8px;">(Cached · <%= time_ago_in_words(cached_at) %> ago)</span>
-      <% end %>
-    </h2>
-    <div style="margin: 8px 0;">
-      <%= weather_icon_tag(weather_result, size: 64) %>
+  <div id="weather-result" class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">Current Weather for <%= h(weather_result&.dig(:name).to_s) %><% if search_info.present? && search_info[:type] == :city_state && search_info[:state].present? %>, <%= h(search_info[:state].to_s.strip.upcase) %><% end %>
+        <% if cached && cached_at.present? %>
+          <small class="text-muted ms-2">(Cached · <%= time_ago_in_words(cached_at) %> ago)</small>
+        <% end %>
+      </h2>
+
+      <div class="d-flex align-items-center mb-2">
+        <div class="me-3">
+          <%= weather_icon_tag(weather_result, size: 64) %>
+        </div>
+        <div>
+          <p class="mb-1"><strong>Temperature:</strong> <%= h display_temperature(weather_result) %></p>
+          <p class="mb-1"><strong>Conditions:</strong> <%= h(weather_result&.dig(:weather, 0, :description).to_s.capitalize) %></p>
+          <p class="mb-1"><strong>Humidity:</strong> <%= h(weather_result&.dig(:main, :humidity).to_s) %>%</p>
+          <p class="mb-0"><strong>Wind:</strong> <%= h display_wind(weather_result) %></p>
+        </div>
+      </div>
+
+      <p class="text-muted small mb-0">(Data provided by OpenWeatherMap)</p>
     </div>
-    <p><strong>Temperature:</strong> <%= h display_temperature(weather_result) %></p>
-    <p><strong>Conditions:</strong> <%= h(weather_result&.dig(:weather, 0, :description).to_s.capitalize) %></p>
-    <p><strong>Humidity:</strong> <%= h(weather_result&.dig(:main, :humidity).to_s) %>%</p>
-    <p><strong>Wind:</strong> <%= h display_wind(weather_result) %></p>
-    <p class="muted">(Data provided by OpenWeatherMap)</p>
   </div>
 <% elsif search_info.present? %>
-  <div style="margin-top: 16px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">
-    <h2>Search submitted</h2>
-    <% if search_info[:type] == :zip %>
-      <p>Searching weather for ZIP: <strong><%= search_info[:value] %></strong></p>
-    <% else %>
-      <p>Searching weather for City: <strong><%= h search_info[:city] %></strong>, State: <strong><%= h search_info[:state] %></strong></p>
-    <% end %>
-    <p class="muted">(No external API configured yet.)</p>
+  <div class="card mb-3">
+    <div class="card-body">
+      <h2 class="card-title">Search submitted</h2>
+      <% if search_info[:type] == :zip %>
+        <p>Searching weather for ZIP: <strong><%= search_info[:value] %></strong></p>
+      <% else %>
+        <% if search_info[:state].present? %>
+          <p>Searching weather for City: <strong><%= h search_info[:city] %></strong>, State: <strong><%= h search_info[:state] %></strong></p>
+        <% else %>
+          <p>Searching weather for City: <strong><%= h search_info[:city] %></strong></p>
+        <% end %>
+      <% end %>
+      <p class="text-muted small mb-0">(No external API configured yet.)</p>
+    </div>
   </div>
 <% end %>
