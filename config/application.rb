@@ -28,6 +28,13 @@ module WeatherApp
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
 
+    # Make sure app/services is in the autoload/eager_load paths so service
+    # objects (e.g. WeatherApiService, WeatherApiClient) are loaded by Zeitwerk.
+    config.paths.add 'app/services', eager_load: true
+
+    # Also autoload form objects from app/forms
+    config.paths.add 'app/forms', eager_load: true
+
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

@@ -27,6 +27,11 @@ class WeatherApiService
     request(query)
   end
 
+  def fetch_by_coords(lat, lon)
+    query = { lat: lat, lon: lon, appid: @api_key, units: 'imperial' }
+    request(query)
+  end
+
   private
 
   def request(query)
