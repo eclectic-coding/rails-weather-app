@@ -2,29 +2,35 @@
 
 <div data-controller="weather-search">
   <form action="/weather" method="get" data-weather-search-target="form">
+    <% current_mode = params[:mode].presence || (
+      if @search_info.present?
+        @search_info[:type] == :city_state ? 'city_state' : 'zip'
+      else
+        'zip'
+      end) %>
     <fieldset>
       <legend>Search by</legend>
       <label>
-        <input type="radio" name="mode" value="zip" checked data-action="weather-search#modeChange">
+        <input type="radio" name="mode" value="zip" <%= 'checked' if current_mode == 'zip' %> data-action="weather-search#modeChange">
         ZIP code
       </label>
       <label>
-        <input type="radio" name="mode" value="city_state" data-action="weather-search#modeChange">
+        <input type="radio" name="mode" value="city_state" <%= 'checked' if current_mode == 'city_state' %> data-action="weather-search#modeChange">
         City / State (US only)
       </label>
     </fieldset>
 
     <div data-weather-search-target="zipFields">
       <label for="zip">ZIP code</label>
-      <input id="zip" name="zip" type="text" pattern="\d{5}" maxlength="5" inputmode="numeric" value="<%= h params[:zip] %>">
+      <input id="zip" name="zip" data-weather-search-target="zip" type="text" pattern="\d{5}" maxlength="5" inputmode="numeric" value="<%= h params[:zip] %>">
     </div>
 
     <div data-weather-search-target="cityStateFields" style="display:none; margin-top: 8px;">
       <label for="city">City</label>
-      <input id="city" name="city" type="text" value="<%= h params[:city] %>">
+      <input id="city" name="city" data-weather-search-target="city" type="text" value="<%= h params[:city] %>">
 
       <label for="state">State (2-letter code)</label>
-      <input id="state" name="state" type="text" maxlength="2" style="text-transform:uppercase" value="<%= h params[:state] %>">
+      <input id="state" name="state" data-weather-search-target="state" type="text" maxlength="2" style="text-transform:uppercase" value="<%= h params[:state] %>">
     </div>
 
     <div style="margin-top: 12px;">
@@ -44,7 +50,7 @@
   <% end %>
 
   <% if @weather_result.present? %>
-    <div style="margin-top: 16px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">
+    <div id="weather-result" style="margin-top: 16px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">
       <h2>Weather for <%= h(@weather_result[:name].to_s) %><% if @weather_result[:sys] && @weather_result[:sys][:country] %>, <%= h(@weather_result[:sys][:country]) %><% end %>
         <% if @cached && @cached_at.present? %>
           <span style="font-weight: normal; font-size: 0.8em; color: #666; margin-left: 8px;">(Cached · <%= time_ago_in_words(@cached_at) %> ago)</span>
