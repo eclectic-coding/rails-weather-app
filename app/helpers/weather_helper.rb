@@ -48,4 +48,42 @@ module WeatherHelper
 
     image_tag(url, { alt: alt_text, width: size, height: size }.merge(options))
   end
+
+  # Convert wind direction in degrees to an 8-point compass direction (N, NE, E, SE, S, SW, W, NW)
+  # Returns nil if degrees is nil
+  def wind_direction(degrees)
+    return nil if degrees.nil?
+
+    d = degrees.to_f % 360
+    directions = %w[N NE E SE S SW W NW]
+    index = ((d + 22.5) / 45.0).floor % directions.length
+    directions[index]
+  end
+
+  # Returns a formatted temperature string (rounded whole number with unit) or nil
+  def display_temperature(weather)
+    return nil unless weather.respond_to?(:dig)
+
+    temp = weather&.dig(:main, :temp)
+    return nil if temp.nil?
+
+    "#{temp.to_f.round} °F"
+  end
+
+  # Returns a formatted wind string like "5 mph (SE)" or "5 mph"; returns nil if no wind data
+  def display_wind(weather)
+    return nil unless weather.respond_to?(:dig)
+
+    speed = weather&.dig(:wind, :speed)
+    return nil if speed.nil?
+
+    deg = weather&.dig(:wind, :deg)
+    label = wind_direction(deg)
+
+    if label.present?
+      "#{speed.to_f.round} mph #{label}"
+    else
+      "#{speed.to_f.round} mph"
+    end
+  end
 end
