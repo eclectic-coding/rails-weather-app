@@ -1,8 +1,6 @@
 require_dependency 'weather_api_service' if defined?(require_dependency)
 
 class WeatherLookup
-  # Accepts search_info as produced by WeatherSearchForm
-  # Returns a hash: { weather: parsed_result_or_nil, error: error_message_or_nil, cached: bool, cached_at: Time || nil }
   def self.call(search_info, api_key: nil, client: nil)
     cached = false
     cached_at = nil
@@ -13,7 +11,6 @@ class WeatherLookup
       lookup = LocationLookup.find_fresh_by_zip(zip) rescue nil
 
       if lookup&.has_coords?
-        # Return cached data without hitting the API
         cached = true
         cached_at = lookup.cached_at
         response = lookup.data_hash
@@ -65,7 +62,6 @@ class WeatherLookup
     rec.cached_at = Time.current
     rec.save
   rescue StandardError => _e
-    # don't let persistence failures block responding
     nil
   end
 

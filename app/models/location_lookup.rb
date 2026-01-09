@@ -1,11 +1,9 @@
 class LocationLookup < ApplicationRecord
-  # Simple TTL caching: consider a record stale after CACHE_TTL seconds
   CACHE_TTL = 30.minutes unless const_defined?(:CACHE_TTL)
 
   scope :by_zip, ->(zip) { where(zip: zip.to_s.strip) }
   scope :by_city_state, ->(city, state) { where(city: city.to_s.strip, state: state.to_s.strip.upcase) }
 
-  # Provide a small coder that responds to `load` and `dump` for ActiveRecord serialization
   class JsonCoder
     def self.load(value)
       return {} if value.nil? || value == ''

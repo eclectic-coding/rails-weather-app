@@ -44,7 +44,6 @@
   <% end %>
 
   <% if @weather_result.present? %>
-    <%# OpenWeatherMap response: name, sys.country, main.temp, weather[0].description, main.humidity, wind.speed %>
     <div style="margin-top: 16px; padding: 8px; border: 1px solid #ddd; background: #f9f9f9;">
       <h2>Weather for <%= h(@weather_result[:name].to_s) %><% if @weather_result[:sys] && @weather_result[:sys][:country] %>, <%= h(@weather_result[:sys][:country]) %><% end %>
         <% if @cached && @cached_at.present? %>

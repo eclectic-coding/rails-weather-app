@@ -10,16 +10,13 @@ class WeatherApiClient
     interval: 0.5,
     interval_randomness: 0.5,
     backoff_factor: 2,
-    # HTTP statuses that should trigger a retry
     retry_statuses: [429, 500, 502, 503, 504],
-    # Exceptions that should trigger a retry
     exceptions: [Faraday::TimeoutError, Faraday::ConnectionFailed]
   }.freeze
 
   # Helper factory for tests that want a client with no retry sleeps
   def self.build_for_test(base_url: nil, adapter: Faraday.default_adapter)
     base = base_url || WeatherApiService::BASE_URL rescue nil
-    # safe fallback if constant not available; otherwise require explicit base_url
     retry_opts = {
       max: 0,
       interval: 0.0,
@@ -43,10 +40,6 @@ class WeatherApiClient
     end
   end
 
-  # Performs a GET with the provided params and returns an OpenStruct with
-  # :status, :body, and :reason_phrase. Network errors (Faraday exceptions)
-  # will be retried according to retry options; if retries are exhausted the
-  # last exception will be raised so callers can handle it.
   def get(params = {})
     attempts = 0
     max_attempts = @retry_options[:max].to_i + 1
@@ -68,7 +61,6 @@ class WeatherApiClient
         body = res.body
         reason = res.reason_phrase
 
-        # If status code is retriable and we have attempts remaining, retry
         if retry_statuses.include?(status) && (attempts + 1) < max_attempts
           attempts += 1
           sleep_with_jitter(interval, randomness, backoff, attempts)
@@ -89,7 +81,6 @@ class WeatherApiClient
       end
     end
 
-    # If we exit loop without a response, raise the last exception or return a generic error
     raise last_exception if last_exception
     raise "WeatherApiClient: failed to get a response"
   end
