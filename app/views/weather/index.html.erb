@@ -50,6 +50,9 @@
           <span style="font-weight: normal; font-size: 0.8em; color: #666; margin-left: 8px;">(Cached · <%= time_ago_in_words(@cached_at) %> ago)</span>
         <% end %>
       </h2>
+      <div style="margin: 8px 0;">
+        <%= weather_icon_tag(@weather_result, size: 64) %>
+      </div>
       <p><strong>Temperature:</strong> <%= h(@weather_result.dig(:main, :temp).to_s) %> °F</p>
       <p><strong>Conditions:</strong> <%= h(@weather_result.dig(:weather, 0, :description).to_s.capitalize) %></p>
       <p><strong>Humidity:</strong> <%= h(@weather_result.dig(:main, :humidity).to_s) %>%</p>
