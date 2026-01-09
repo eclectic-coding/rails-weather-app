@@ -4,6 +4,7 @@ if ENV["RAILS_ENV"] ||= "test"
     add_filter "/lib/"
     add_filter "/app/channels/"
     add_filter "/app/jobs/"
+    add_filter "/app/mailers/"
   end
 end
 
@@ -20,6 +21,10 @@ require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 require 'fuubar'
 require 'factory_bot_rails'
+require 'webmock/rspec'
+
+# Disable all external network connections by default. Tests should stub external requests.
+WebMock.disable_net_connect!(allow_localhost: true)
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
