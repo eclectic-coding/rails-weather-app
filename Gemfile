@@ -57,6 +57,9 @@ group :development, :test do
   gem "factory_bot_rails"
 end
 
+# HTTP client used by WeatherApiService
+gem 'faraday'
+
 group :test do
   gem 'simplecov', '~> 0.22.0', require: false
   gem 'webmock', '~> 3.18'
