@@ -64,6 +64,8 @@ gem 'faraday'
 gem 'dartsass-rails'
 gem 'bootstrap', '~> 5.3.0'
 
+gem 'hotwire-spark'
+
 group :test do
   gem 'simplecov', '~> 0.22.0', require: false
   gem 'webmock', '~> 3.18'
