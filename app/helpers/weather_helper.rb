@@ -60,14 +60,16 @@ module WeatherHelper
     directions[index]
   end
 
-  # Returns a formatted temperature string (rounded whole number with unit) or nil
+  # Returns a formatted temperature string (preserve .5 precision if present) or nil
   def display_temperature(weather)
     return nil unless weather.respond_to?(:dig)
 
     temp = weather&.dig(:main, :temp)
     return nil if temp.nil?
 
-    "#{temp.to_f.round} °F"
+    value = temp.to_f
+    formatted = (value == value.to_i) ? value.to_i.to_s : sprintf('%.1f', value)
+    "#{formatted} °F"
   end
 
   # Returns a formatted wind string like "5 mph (SE)" or "5 mph"; returns nil if no wind data

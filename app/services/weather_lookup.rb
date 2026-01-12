@@ -93,6 +93,9 @@ class WeatherLookup
   def self.fetch_and_persist_forecast_for_lookup(lookup, service)
     return [] unless lookup&.has_coords?
 
+    # Only attempt forecast if the service implements the forecast APIs
+    return [] unless service.respond_to?(:fetch_forecast_by_coords) && service.respond_to?(:five_day_summaries)
+
     begin
       forecast_json = service.fetch_forecast_by_coords(lookup.latitude, lookup.longitude)
       if forecast_json.is_a?(Hash) && forecast_json[:error].present?
