@@ -8,6 +8,7 @@ class WeatherController < ApplicationController
     @api_error = nil
     @cached = false
     @cached_at = nil
+    @forecast = []
 
     return unless @search_info.present?
 
@@ -16,6 +17,7 @@ class WeatherController < ApplicationController
     @api_error = result[:error]
     @cached = result[:cached]
     @cached_at = result[:cached_at]
+    @forecast = result[:forecast] || []
   end
 
   private

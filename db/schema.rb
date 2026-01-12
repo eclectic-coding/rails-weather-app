@@ -10,12 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_09_170000) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_12_123000) do
   create_table "location_lookups", force: :cascade do |t|
     t.datetime "cached_at"
     t.string "city"
     t.datetime "created_at", null: false
     t.text "data"
+    t.text "forecast_data"
     t.decimal "latitude", precision: 10, scale: 6
     t.decimal "longitude", precision: 10, scale: 6
     t.string "state"

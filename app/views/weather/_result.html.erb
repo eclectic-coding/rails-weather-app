@@ -1,7 +1,7 @@
 <%# Partial: Renders weather result or submitted search info. Expects locals: weather_result, search_info, cached, cached_at %>
 
 <% if weather_result.present? %>
-  <div id="weather-result" class="card mb-3">
+  <div id="weather-result" class="card my-3">
     <div class="card-body">
       <h2 class="card-title">Current Weather for <%= h(weather_result&.dig(:name).to_s) %><% if search_info.present? && search_info[:type] == :city_state && search_info[:state].present? %>, <%= h(search_info[:state].to_s.strip.upcase) %><% end %>
         <% if cached && cached_at.present? %>
@@ -24,6 +24,9 @@
       <p class="text-muted small mb-0">(Data provided by OpenWeatherMap)</p>
     </div>
   </div>
+
+  <%= render partial: 'weather/forecast_5_day', locals: { forecast: @forecast } if @forecast.present? %>
+
 <% elsif search_info.present? %>
   <div class="card mb-3">
     <div class="card-body">

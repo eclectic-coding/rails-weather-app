@@ -24,6 +24,11 @@ class LocationLookup < ApplicationRecord
     serialize :data, coder: JsonCoder
   end
 
+  # If we have a forecast_data text column, serialize it as JSON as well
+  if columns_hash['forecast_data'] && columns_hash['forecast_data'].type == :text
+    serialize :forecast_data, coder: JsonCoder
+  end
+
   before_save :normalize_state
 
   def self.find_fresh_by_zip(zip)
@@ -44,6 +49,26 @@ class LocationLookup < ApplicationRecord
 
   def has_coords?
     latitude.present? && longitude.present?
+  end
+
+  # Forecast helpers
+  def forecast_hash
+    forecast_data || {}
+  end
+
+  # Check whether the stored forecast is fresh. Uses the same CACHE_TTL by default.
+  def forecast_fresh?(ttl_seconds: CACHE_TTL)
+    return false if forecast_data.blank?
+    # We don't store a separate timestamp for forecast; rely on cached_at for simplicity
+    return false if cached_at.nil?
+    cached_at > Time.current - ttl_seconds
+  end
+
+  # Store raw forecast JSON and update cached_at
+  def update_forecast!(json)
+    self.forecast_data = json
+    self.cached_at = Time.current
+    save!
   end
 
   private

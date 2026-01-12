@@ -1,0 +1,36 @@
+<%# Partial: Renders a simplified 5-day forecast. Expects local: forecast (array of summaries) %>
+<% forecast = (defined?(forecast) && forecast) || (defined?(controller) && controller.respond_to?(:instance_variable_get) && controller.instance_variable_get(:@forecast)) %>
+<% return if forecast.blank? %>
+
+<div class="card my-3 border">
+  <div class="card-body">
+    <h2 class="card-title">5-Day Forecast</h2>
+
+    <div id="forecast-5-day" class="d-flex gap-2 my-3">
+      <% forecast.each do |day| %>
+        <div class="card text-center" style="width: 9rem;">
+          <div class="card-body p-2">
+            <div class="small text-muted"><%= h day[:date].strftime('%a %b %d') %></div>
+            <% if day[:icon].present? %>
+              <% icon_hash = { weather: [{ icon: day[:icon] }] } %>
+              <%= weather_icon_tag(icon_hash, size: 48) rescue nil %>
+            <% end %>
+            <div class="mt-1">
+              <div class="small text-muted">High</div>
+              <div class="fw-bold"><%= h day[:temp_max].to_f.round %>°</div>
+            </div>
+            <div class="mt-1">
+              <div class="small text-muted">Low</div>
+              <div class="small text-muted"><%= h day[:temp_min].to_f.round %>°</div>
+            </div>
+            <div class="mt-1">
+              <div class="small text-muted">Precip</div>
+              <div class="small text-muted"><%= h((day[:pop].to_f * 100).round) %>%</div>
+            </div>
+            <div class="small text-truncate mt-2" title="<%= h(day[:description].to_s) %>"><%= h(day[:description].to_s.capitalize) %></div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
