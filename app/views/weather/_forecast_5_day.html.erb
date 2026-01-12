@@ -1,4 +1,3 @@
-<%# Partial: Renders a simplified 5-day forecast. Expects local: forecast (array of summaries) %>
 <% forecast = (defined?(forecast) && forecast) || (defined?(controller) && controller.respond_to?(:instance_variable_get) && controller.instance_variable_get(:@forecast)) %>
 <% return if forecast.blank? %>
 

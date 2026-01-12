@@ -1,4 +1,3 @@
-<%# Partial: weather/_form.html.erb - renders the search form. Expects a local `current_mode` (string 'zip' or 'city_state') %>
 <%= form_with url: '/weather', method: :get, local: true, data: { 'weather-search-target': 'form' }, html: { class: 'needs-validation', novalidate: true } do %>
   <fieldset class="mb-3" role="radiogroup" aria-labelledby="search-by-legend">
     <legend id="search-by-legend" class="col-form-label">Search by</legend>

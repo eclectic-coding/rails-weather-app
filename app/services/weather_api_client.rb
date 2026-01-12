@@ -14,7 +14,6 @@ class WeatherApiClient
     exceptions: [Faraday::TimeoutError, Faraday::ConnectionFailed]
   }.freeze
 
-  # Helper factory for tests that want a client with no retry sleeps
   def self.build_for_test(base_url: nil, adapter: Faraday.default_adapter)
     base = base_url || WeatherApiService::BASE_URL rescue nil
     retry_opts = {
@@ -75,7 +74,7 @@ class WeatherApiClient
           sleep_with_jitter(interval, randomness, backoff, attempts)
           next
         else
-          # re-raise after exhausting retries
+
           raise e
         end
       end

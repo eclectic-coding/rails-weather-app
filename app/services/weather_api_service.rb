@@ -33,7 +33,6 @@ class WeatherApiService
     request(query)
   end
 
-  # Fetch 5-day / 3-hour forecast by coordinates. Returns parsed JSON or error hash.
   def fetch_forecast_by_coords(lat, lon)
     client = WeatherApiClient.new(base_url: BASE_URL_FORECAST)
     query = { lat: lat, lon: lon, appid: @api_key, units: 'imperial' }
@@ -64,12 +63,9 @@ class WeatherApiService
     end
   end
 
-  # Transform raw forecast JSON into simplified daily summaries (up to 5 days)
-  # Each summary: { date: Date, temp_min: Float, temp_max: Float, icon: String, description: String }
   def five_day_summaries(forecast_json)
     return [] unless forecast_json.is_a?(Hash) && forecast_json[:list].is_a?(Array)
 
-    # Group entries by local date (using dt_txt which is in UTC)
     groups = {}
     forecast_json[:list].each do |entry|
       dt_txt = entry[:dt_txt]
@@ -81,7 +77,6 @@ class WeatherApiService
       groups[date] << entry
     end
 
-    # Build summaries sorted by date, take up to 5 days
     groups.keys.sort.map do |date|
       entries = groups[date]
       temps = entries.map { |e| e.dig(:main, :temp) }.compact
@@ -90,12 +85,10 @@ class WeatherApiService
       temp_min = temps.min
       temp_max = temps.max
 
-      # Pick the entry at midday or the first as representative for icon/description
       rep = entries.find { |e| e[:dt_txt].include?('12:00:00') } || entries.first
       icon = rep.dig(:weather, 0, :icon)
       description = rep.dig(:weather, 0, :description)
 
-      # Compute precipitation probability for the day (pop is 0..1). Use the maximum pop across entries.
       pops = entries.map { |e| e[:pop] }.compact.map(&:to_f)
       pop = pops.max || 0.0
 

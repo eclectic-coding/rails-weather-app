@@ -1,7 +1,6 @@
 class CacheWeatherIconJob < ApplicationJob
   queue_as :default
 
-  # icon_code: string like '10d'
   def perform(icon_code)
     return if icon_code.blank?
 

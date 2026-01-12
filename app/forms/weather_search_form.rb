@@ -13,8 +13,6 @@ class WeatherSearchForm
     validate
   end
 
-  # Returns a hash describing the search when inputs are valid and present, otherwise nil
-  # { type: :zip, value: '02139' } or { type: :city_state, city: 'Name', state: 'XX' }
   def search_info
     return nil unless valid?
 
@@ -38,7 +36,6 @@ class WeatherSearchForm
   end
 
   def validate
-    # prefer zip if provided
     if zip_present?
       unless @zip.match?(ZIP_REGEX)
         @errors << 'ZIP code must be 5 digits (US only).'
