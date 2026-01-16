@@ -62,7 +62,7 @@ gem 'faraday'
 
 # Styling
 gem 'dartsass-rails'
-gem 'bootstrap', '~> 5.3.0'
+gem 'bootstrap', '~> 5.3.8'
 
 gem 'hotwire-spark'
 
